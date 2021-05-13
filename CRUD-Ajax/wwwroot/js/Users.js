@@ -1,6 +1,8 @@
-﻿$(document).ready(function () {
+﻿//FUNCION QUE INICIALIZA LOS DATOS EN LA TABLA
+$(document).ready(function () {
     loadData();
 });
+//LISTA DE DATOS EN TABLA
 function loadData() {
     $.ajax({
         url: "/Home/List",
@@ -25,6 +27,8 @@ function loadData() {
         }
     });
 }
+
+//GUARDAR LOS DATOS EN EL MODELO
 function Add() {
     var res = validate();
     if (res == false) {
@@ -43,10 +47,10 @@ function Add() {
             if (result == true) {
                 $('#myModal').modal('hide');
                                 
-                $("#Mensaje").html("<div class='alert alert-success' id='Mensaje' role='alert'>Usuario Guardado con Exito</div >");
+                $("#Mensaje").html("<div class='alert alert-success' role='alert'>Usuario Guardado con Exito</div >");
             } else {
                 //$('#myModal').modal('hide');
-                $("#MsjError").html("<div class='alert alert-danger' id='Mensaje' role='alert'>El usuario ya existe...!</div >");
+                $("#MsjError").html("<div class='alert alert-danger' role='alert'>El usuario ya existe...!</div >");
             }
         },
         error: function (errormessage) {
@@ -55,6 +59,7 @@ function Add() {
     });
 }
 
+//MUESTRA DATOS SELECCIONADO PARA ACTUALIZAR
 function getbyID(Id) {
     $('#txtNombre').css('border-color', 'lightgrey');
     $('#txtNombreUsuario').css('border-color', 'lightgrey');
@@ -77,6 +82,8 @@ function getbyID(Id) {
     });
     return false;
 }
+
+//ACTUALIZA DATOS
 function Update() {
     var res = validate();
     if (res == false) {
@@ -94,16 +101,25 @@ function Update() {
         type: "POST",        
         success: function (result) {
             loadData();
-            $('#myModal').modal('hide');
-            $('#txtUsuarioId').val("");
-            $('#txtNombre').val("");
-            $('#txtNombreUsuario').val("");                    
+            if (result == true) {
+                $('#myModal').modal('hide');
+                $('#txtUsuarioId').val("");
+                $('#txtNombre').val("");
+                $('#txtNombreUsuario').val("");  
+
+                $("#Mensaje").html("<div class='alert alert-success' role='alert'>Usuario Actualizado con Exito</div >");
+            } else {
+                //$('#myModal').modal('hide');
+                $("#MsjError").html("<div class='alert alert-danger' role='alert'>El usuario ya existe...!</div >");
+            }                              
         },
         error: function (errormessage) {
             alert(errormessage.responseText);
         }
     });
 }
+
+//ELIMINA UN REGISTRO
 function Delele(ID) {
     var ans = confirm("Are you sure you want to delete this Record?");
     if (ans) {
@@ -121,6 +137,8 @@ function Delele(ID) {
         });
     }
 }
+
+//LIMPIA LOS CAMPOS DE TEXTOS
 function clearTextBox() {
     $('#txtUsuarioId').val("");
     $('#txtNombre').val("");
@@ -131,6 +149,8 @@ function clearTextBox() {
     $('#txtNombreUsuario').css('border-color', 'lightgrey');
     $('#txtEstado').css('border-color', 'lightgrey');     
 }
+
+//VALIDACIÓN DE CAMPOS DE TEXTOS
 function validate() {
     var isValid = true;
     if ($('#txtNombre').val().trim() == "") {

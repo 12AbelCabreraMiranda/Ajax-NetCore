@@ -19,14 +19,16 @@ namespace CRUD_Ajax.Controllers
         {
             return View();
         }
+
+        //LISTA DE DATOS EN TABLA
         public JsonResult List()
         {
             return Json(_context.Usuario.ToList());
         }
         
+        //GUARDAR LOS DATOS EN EL MODELO
         public bool Add(Usuario user)
-        {
-            
+        {            
             bool valor;
             var usuario = _context.Usuario.Where(u=>u.NombreUsuario.Equals(user.NombreUsuario)).ToList();
             if (!usuario.Count.Equals(0))
@@ -48,22 +50,55 @@ namespace CRUD_Ajax.Controllers
             
             return valor;
         }
+
+        //MUESTRA DATOS SELECCIONADO PARA ACTUALIZAR
         public JsonResult GetbyID(int ID)
         {
             return Json(_context.Usuario.FirstOrDefault(x => x.UsuarioId == ID));
         }
-        public JsonResult Update(Usuario user)
+        
+        //ACTUALIZA DATOS
+        public bool Update(Usuario user)
         {
-            var data = _context.Usuario.FirstOrDefault(x => x.UsuarioId == user.UsuarioId);
-            if (data != null)
+            var valor=false;
+            var usuario = _context.Usuario.Where(u=>u.UsuarioId.Equals(user.UsuarioId)).FirstOrDefault();
+            if (usuario.UsuarioId.Equals(user.UsuarioId) && usuario.NombreUsuario.Equals(user.NombreUsuario))
             {
-                data.Nombre = user.Nombre;
-                data.NombreUsuario = user.NombreUsuario;
-                data.Estado = user.Estado;                
+
+                usuario.Nombre = user.Nombre;
+                usuario.NombreUsuario = user.NombreUsuario;
+                
+                _context.Usuario.Update(usuario);
                 _context.SaveChanges();
+                valor = true;
             }
-            return Json(data);
+            else
+            {
+                if (usuario.UsuarioId.Equals(user.UsuarioId) && usuario.NombreUsuario!=user.NombreUsuario)
+                {
+                    var usuario2 = _context.Usuario.Where(u => u.NombreUsuario.Equals(user.NombreUsuario)).ToList();
+                    if (!usuario2.Count.Equals(0))
+                    {
+                        valor = false;//Dato existente encontrado
+                    }
+                    else
+                    {
+                        usuario.Nombre = user.Nombre;
+                        usuario.NombreUsuario = user.NombreUsuario;
+                        
+                        _context.Usuario.Update(usuario);
+                        _context.SaveChanges();
+
+                        valor = true;
+                    }
+                }
+               
+            }
+            return valor;//Pendiente, atualizar con el mismo usuario y con el mismo usuario actualizando su usuario sin que sea igual que de los que ya existe
+
         }
+
+        //ELIMINA UN REGISTRO
         public JsonResult Delete(int ID)
         {
             var data = _context.Usuario.FirstOrDefault(x => x.UsuarioId == ID);
